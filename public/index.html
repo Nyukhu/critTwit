@@ -7,24 +7,66 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>
-    console.log("It works!");
-    const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
 
-    socket.addEventListener('open', event => {
-      console.log("connected", event);
-    });
+    document.addEventListener('DOMContentLoaded',function () {
 
-    socket.addEventListener('message', event => {
-      console.log("new message", event.data);
+      let testContainer = document.querySelector(".message-test");
+      let testImg = document.querySelector(".test-img");
+      let body = document.querySelector("body");
+      console.log("It works!");
+      const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
 
-      socket.send("message received!");
-    });
+      socket.addEventListener('open', event => {
+        console.log("connected", event);
+      });
+
+      socket.addEventListener('message', event => {
+        let tweet = JSON.parse(event.data);
+        console.log("new message", tweet);
+
+        if (!tweet.retweeted_status) {
+
+          let newP = document.createElement("p");
+          let newImg = document.createElement("img");
+
+          newP.textContent = tweet.text;
+          testContainer.textContent = tweet.text;
+          if (tweet.extended_tweet){
+            testContainer.textContent = tweet.extended_tweet.full_text;
+            newP.textContent = tweet.extended_tweet.full_text;
+
+            if (tweet.extended_tweet.entities.media[0].media_url)
+            {
+              newImg.setAttribute("src",tweet.extended_tweet.entities.media[0].media_url)
+            }
+          } else{
+          if (tweet.entities.media[0].media_url)
+          {
+            newImg.setAttribute("src",tweet.entities.media[0].media_url)
+            newImg.setAttribute("width","200")
+          }}
+
+          body.append(newP);
+          body.append(newImg);
+        }
+        // else
+        // if (tweet.retweeted_status.entities.media[0].media_url)
+        // {
+        //   testImg.setAttribute("src",tweet.retweeted_status.entities.media[0].media_url)
+        // }
+
+        socket.send("message received!");
+      });
+    })
+
+
   </script>
 </head>
 
 <body>
   <p>Hello world!</p>
-
+  <div class="message-test"></div>
+  <img class="test-img" src="" alt="" width="200">
 </body>
 
 </html>
