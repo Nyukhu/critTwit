@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/Nyukhu/critTwit/issues"
   },
-  "homepage": "https://github.com/Nyukhu/critTwit#readme"
+  "homepage": "https://github.com/Nyukhu/critTwit#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "request": "^2.88.0",
+    "ws": "^7.2.1"
+  }
 }
