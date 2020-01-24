@@ -1,5 +1,6 @@
 const { Transform } = require("stream");
 
+let parsedObjects = [];
 const parser = new Transform({
     readableObjectMode: true,
     transform(chunk, encoding, callback) {
@@ -7,6 +8,7 @@ const parser = new Transform({
 
         try {
             data = JSON.parse(chunk);
+            parsedObjects.push(data)
         } catch (error) {
             console.error("error parsing into json: ", chunk);
             this.emit("error", error);
@@ -18,4 +20,5 @@ const parser = new Transform({
     }
 })
 
-module.exports = parser;
+exports.parser = parser;
+exports.parsedObjects = parsedObjects;

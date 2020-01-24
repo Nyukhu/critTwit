@@ -1,9 +1,9 @@
 const request = require("request");
 const splitter = require("./stream_utils/splitter");
-const parser = require("./stream_utils/parser");
+const {parser} = require("./stream_utils/parser");
 const logger = require("./stream_utils/logger");
 
-const httpStream = request.get(`${process.env.TWITTER_API_STREAM_URL}/statuses/filter.json?track=digitalpainting`, {
+const httpStream = request.get(`${process.env.TWITTER_API_STREAM_URL}/statuses/filter.json?track=artcritweet`, {
     oauth: {
         consumer_key: process.env.TWITTER_API_CONSUMER_KEY,
         consumer_secret: process.env.TWITTER_API_CONSUMER_SECRET,

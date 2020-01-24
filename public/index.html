@@ -10,9 +10,7 @@
 
     document.addEventListener('DOMContentLoaded',function () {
 
-      let testContainer = document.querySelector(".message-test");
-      let testImg = document.querySelector(".test-img");
-      let body = document.querySelector("body");
+
       console.log("It works!");
       const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
 
@@ -20,42 +18,34 @@
         console.log("connected", event);
       });
 
+
       socket.addEventListener('message', event => {
-        let tweet = JSON.parse(event.data);
-        console.log("new message", tweet);
+        let res = JSON.parse(event.data);
+        console.log("new message", res);
 
-        if (!tweet.retweeted_status) {
-
-          let newP = document.createElement("p");
-          let newImg = document.createElement("img");
-
-          newP.textContent = tweet.text;
-          testContainer.textContent = tweet.text;
-          if (tweet.extended_tweet){
-            testContainer.textContent = tweet.extended_tweet.full_text;
-            newP.textContent = tweet.extended_tweet.full_text;
-
-            if (tweet.extended_tweet.entities.media[0].media_url)
-            {
-              newImg.setAttribute("src",tweet.extended_tweet.entities.media[0].media_url)
-            }
-          } else{
-          if (tweet.entities.media[0].media_url)
-          {
-            newImg.setAttribute("src",tweet.entities.media[0].media_url)
-            newImg.setAttribute("width","200")
-          }}
-
-          body.append(newP);
-          body.append(newImg);
+        switch (res.event) {
+          case "initialTweets":
+            res.data.forEach((tweet) => {
+              console.log("init", tweet);
+              printTweetImg(tweet,socket);
+            })
+            break;
+          case "realTimeTweet":
+            printTweetImg(res.data,socket);
+            break;
+          default:
+            console.log("undefined event")
         }
+
+        
+
         // else
         // if (tweet.retweeted_status.entities.media[0].media_url)
         // {
         //   testImg.setAttribute("src",tweet.retweeted_status.entities.media[0].media_url)
         // }
 
-        socket.send("message received!");
+        socket.send(JSON.stringify({event:"msg", data:"message received!"}));
       });
     })
 
@@ -68,5 +58,41 @@
   <div class="message-test"></div>
   <img class="test-img" src="" alt="" width="200">
 </body>
-
+  <div class="tweet-list"></div>
 </html>
+
+<script>
+  function printTweetImg(tweet,socket){
+
+    let body = document.querySelector("body");
+    console.log("jui pas la ")
+    if (!tweet.retweeted_status) {
+
+
+      let newImg = document.createElement("img");
+
+      if (tweet.extended_tweet){
+
+        if (tweet.extended_tweet.entities.media)
+        {
+          newImg.setAttribute("src",tweet.extended_tweet.entities.media[0].media_url);
+          newImg.setAttribute("width","200");
+
+        }
+      } else{
+        if (tweet.entities.media)
+        {
+          newImg.setAttribute("src",tweet.entities.media[0].media_url);
+          newImg.setAttribute("width","200");
+          newImg.addEventListener("click",handleClick.bind(this,tweet,socket));
+        }}
+
+      body.prepend(newImg);
+    }
+  }
+  function handleClick(tweet,socket) {
+    console.log("noot noot");
+    socket.send(JSON.stringify({event:"comment",data:tweet}));
+  }
+
+</script>
