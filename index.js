@@ -3,6 +3,9 @@ require("dotenv").config();
 const { wsServer, server } = require("./src/server");
 const twitterStream = require("./src/data_streams/twitterStream");
 const { parsedObjects } = require('./src/data_streams/stream_utils/parser');
+const { critweetResponse } = require('./src/social_network_utils/twitterUtils');
+
+const markLabels = ["compositon","colouring","proportions/perspective", "emotional impact"];
 
 twitterStream.on("error", error => {
     console.error(error);
@@ -21,14 +24,28 @@ wsServer.on("connection", client => {
                 client.send("Welcome!");
                 break;
             case "comment":
-                console.log(data.data);
+                console.log("test",data.data.id_str);
+                let review = data.data
+                let msg = ' \n review from Critweet : \n '
+                let average = 0;
+                for (let i = 0; i < markLabels.length; i++) {
+                    let mark = review.marks[markLabels[i]];
+                    msg += markLabels[i] + " : " + mark + "\n";
+                    average += parseInt(mark);
+                }
+                average = average/4;
+
+                msg += "average : " + average;
+
+                msg += "\n comment : \n" + review.comment;
+                critweetResponse("@" + review.tweet.user.screen_name,review.tweet.id_str,msg);
                 break;
             default:
                 console.log("undefined event")
         }
 
 
-    })
+    });
 
     client.send(JSON.stringify({event: "initialTweets", data: parsedObjects}));
 
@@ -42,6 +59,6 @@ wsServer.on("connection", client => {
         client.send(tweetString);
 
     })
-})
+});
 
 server.listen(process.env.PORT);

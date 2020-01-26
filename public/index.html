@@ -3,13 +3,177 @@
 
 <head>
   <meta charset="utf-8">
-  <title>TwT Streamer</title>
+  <title>Critweet</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,400,700,900&display=swap" rel="stylesheet">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      font-family: 'Lato', sans-serif;
+    }
+    body{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 50px;
+      background-color: #171717;
+      font-weight: 400;
+
+    }
+    .lightbox{
+      position: absolute;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      z-index: 1000;
+      background-color: rgba(1, 1, 1, 0.71);
+    }
+    .lightbox-img{
+
+    }
+    .tweet-list{
+      display: flex;
+      flex-direction: column;
+    }
+    .tweet-img{
+      border-radius: 6px;
+    }
+    .tweet-container{
+      width: 30vw;
+      background-color: #252525;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-evenly;
+      height: 40vh;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      margin: 30px;
+    }
+    .tweet-container:hover{
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    }
+    .review-fields{
+      display: flex;
+      flex-direction: column;
+      width: 60%;
+      height: 100%;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .review-comment{
+      width: 100%;
+      height: 15%;
+      resize: none;
+      color: #dadada;
+      background-color: #171717;
+      border-radius: 6px;
+      border: none;
+      padding: 0.5vw;
+    }
+    .review-submit{
+      background: none;
+      width: 30%;
+      height: 2vw;
+      border: solid 1px darkcyan;
+      color: darkcyan;
+      border-radius: 6px;
+      margin: 2vh 0 ;
+      transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+
+    }
+    .review-submit:hover{
+      color: #00b4b4;
+      border-color: #00b4b4;
+      transform: translateX(-5px);
+    }
+
+    .review-mark{
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: flex-end;
+    }
+    .markRange{
+      height: 2px;
+      width: 50%;
+      -webkit-appearance: none;
+      background-color: #171717;
+      border-radius: 6px;
+    }
+    .markRange:focus {
+       outline: none;
+     }
+    .markRange::-webkit-slider-runnable-track {
+       width: 100%;
+       height: 1px;
+       cursor: pointer;
+       box-shadow: none;
+      background-color: #171717;
+       border-radius: 0px;
+       border: 0px solid #010101;
+     }
+    .markRange::-moz-range-track {
+       width: 100%;
+       height: 1px;
+       cursor: pointer;
+       box-shadow: none;
+      background-color: #171717;
+       border-radius: 0px;
+       border: 0px solid #010101;
+     }
+    .markRange::-webkit-slider-thumb {
+       box-shadow: none;
+       border: 0px solid #ffffff;
+       box-shadow: 0px 10px 10px rgba(0,0,0,0.25);
+       height: 20px;
+       width: 10px;
+       border-radius: 22px;
+       background: cyan;
+      cursor: pointer;
+       -webkit-appearance: none;
+       margin-top: -10px;
+     }
+    .markRange::-moz-range-thumb{
+       box-shadow: none;
+       border: 0px solid #ffffff;
+       box-shadow: 0px 10px 10px rgba(0,0,0,0.25);
+       height: 20px;
+       width: 10px;
+       border-radius: 22px;
+       background: cyan;
+       cursor: pointer;
+       -webkit-appearance: none;
+       margin-top: -10px;
+     }
+    .markRange::-moz-focus-outer {
+       border: 0;
+     }
+    .mark-group{
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      color: #dadada;
+    }
+  </style>
   <script>
+    const markLabels = ["compositon","colouring","proportions/perspective", "emotional impact"];
 
     document.addEventListener('DOMContentLoaded',function () {
-
+      let lightbox = document.querySelector('.lightbox');
+      lightbox.style.display = "none";
+      lightbox.addEventListener("click", function(e){
+        lightbox.style.display = "none";
+      })
 
       console.log("It works!");
       const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
@@ -28,7 +192,7 @@
             res.data.forEach((tweet) => {
               console.log("init", tweet);
               printTweetImg(tweet,socket);
-            })
+            });
             break;
           case "realTimeTweet":
             printTweetImg(res.data,socket);
@@ -37,7 +201,7 @@
             console.log("undefined event")
         }
 
-        
+
 
         // else
         // if (tweet.retweeted_status.entities.media[0].media_url)
@@ -54,23 +218,84 @@
 </head>
 
 <body>
-  <p>Hello world!</p>
-  <div class="message-test"></div>
-  <img class="test-img" src="" alt="" width="200">
+<div class="lightbox">
+  <img class="lightbox-img" src="" alt="">
+</div>
+<div class="tweet-list">
+  <datalist id="tickmarks">
+    <option value="0" label="0">
+    <option value="1">
+    <option value="2">
+    <option value="3">
+    <option value="4">
+    <option value="5">
+    <option value="6">
+    <option value="7">
+    <option value="8">
+    <option value="9">
+    <option value="10" label="10">
+  </datalist>
+</div>
 </body>
-  <div class="tweet-list"></div>
+
 </html>
 
 <script>
   function printTweetImg(tweet,socket){
 
-    let body = document.querySelector("body");
-    console.log("jui pas la ")
+    let tweetList = document.querySelector(".tweet-list");
+    console.log("jui pas la ");
     if (!tweet.retweeted_status) {
 
 
       let newImg = document.createElement("img");
+      let tweetContainer = document.createElement("article");
+      let commentArea = document.createElement("textArea");
+      let submitBtn = document.createElement("button");
+      let marksContainer = document.createElement("div");
 
+      let compositionMark = document.createElement("input");
+      let colouringMark = document.createElement("input");
+      let anatomyPropsMark = document.createElement("input");
+      let emotionalMark = document.createElement('input');
+
+      let review = document.createElement("div");
+
+
+      review.classList.add("review-fields");
+      tweetList.classList.add("tweet-list");
+      newImg.classList.add("tweet-img");
+      tweetContainer.classList.add("tweet-container");
+      commentArea.classList.add("review-comment");
+      submitBtn.classList.add("review-submit");
+      marksContainer.classList.add("review-mark");
+
+      commentArea.setAttribute('maxlength',"140");
+      commentArea.setAttribute('placeholder',"comment ( 140 caracters max )");
+
+      let marks = [compositionMark, colouringMark, anatomyPropsMark, emotionalMark];
+
+      for (let i = 0; i < marks.length; i++) {
+        let markGroup = document.createElement("div");
+        let markLabel = document.createElement("label");
+
+        markLabel.textContent = markLabels[i];
+        marks[i].setAttribute("type", "range");
+        marks[i].setAttribute("min", "0");
+        marks[i].setAttribute("max", "10");
+        marks[i].setAttribute("list", "tickmarks");
+        marks[i].classList.add("markRange");
+
+        markGroup.classList.add("mark-group");
+        markGroup.appendChild(markLabel);
+        markGroup.appendChild(marks[i]);
+
+        marksContainer.appendChild(markGroup);
+      }
+
+
+      commentArea.id = "tweet-comment-" + tweet.id_str;
+      marksContainer.id = "tweet-marks-" + tweet.id_str;
       if (tweet.extended_tweet){
 
         if (tweet.extended_tweet.entities.media)
@@ -84,15 +309,49 @@
         {
           newImg.setAttribute("src",tweet.entities.media[0].media_url);
           newImg.setAttribute("width","200");
-          newImg.addEventListener("click",handleClick.bind(this,tweet,socket));
         }}
+      newImg.addEventListener('click',function () {
+        let lightbox = document.querySelector(".lightbox");
+        let lightboxImg = document.querySelector(".lightbox-img");
+        lightboxImg.src = newImg.src
+        lightbox.style.display = "flex";
 
-      body.prepend(newImg);
+      });
+      submitBtn.textContent = "send review";
+
+      review.appendChild(marksContainer);
+      review.appendChild(commentArea);
+      review.appendChild(submitBtn);
+
+      tweetContainer.appendChild(newImg);
+      tweetContainer.appendChild(review);
+      tweetList.prepend(tweetContainer);
+
+      submitBtn.addEventListener("click",handleClick.bind(this,tweet,socket));
+
     }
   }
-  function handleClick(tweet,socket) {
-    console.log("noot noot");
-    socket.send(JSON.stringify({event:"comment",data:tweet}));
+  function handleClick(tweet,socket,e) {
+    let comment = document.getElementById("tweet-comment-" + tweet.id_str);
+    let markContainer = document.getElementById("tweet-marks-" + tweet.id_str);
+    let marks = markContainer.querySelectorAll(".markRange");
+
+    let marksArray = {};
+    for (let i = 0; i < marks.length; i++) {
+      console.log(marks[i].value);
+        marksArray[markLabels[i]] = marks[i].value
+    }
+
+    console.log("noot noot",marksArray);
+
+    socket.send(JSON.stringify({event:"comment",data:{tweet : tweet, comment:comment.value, marks: marksArray}}));
+
+    e.target.textContent = "review sent";
+    e.target.style.borderColor = "lightgreen";
+    e.target.style.color = "lightgreen";
+
+
   }
 
 </script>
+
