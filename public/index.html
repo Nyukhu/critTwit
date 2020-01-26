@@ -68,14 +68,14 @@
       align-items: flex-end;
     }
     .review-comment{
-      width: 100%;
+      width: 95%;
       height: 15%;
       resize: none;
       color: #dadada;
       background-color: #171717;
       border-radius: 6px;
       border: none;
-      padding: 0.5vw;
+      padding: 2.5%;
     }
     .review-submit{
       background: none;
@@ -182,7 +182,6 @@
         console.log("connected", event);
       });
 
-
       socket.addEventListener('message', event => {
         let res = JSON.parse(event.data);
         console.log("new message", res);
@@ -200,14 +199,6 @@
           default:
             console.log("undefined event")
         }
-
-
-
-        // else
-        // if (tweet.retweeted_status.entities.media[0].media_url)
-        // {
-        //   testImg.setAttribute("src",tweet.retweeted_status.entities.media[0].media_url)
-        // }
 
         socket.send(JSON.stringify({event:"msg", data:"message received!"}));
       });
