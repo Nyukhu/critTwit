@@ -1,6 +1,6 @@
 # CRITWIT
 
-### lancement 
+### Lancement 
    `npm install`
    
    copier / coller le .env.example, le renommer en .env et renseigner les variables d'environnement
