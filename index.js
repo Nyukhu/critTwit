@@ -5,7 +5,7 @@ const twitterStream = require("./src/data_streams/twitterStream");
 const { parsedObjects } = require('./src/data_streams/stream_utils/parser');
 const { critweetResponse } = require('./src/social_network_utils/twitterUtils');
 
-const markLabels = ["compositon","colouring","proportions/perspective", "emotional impact"];
+const markLabels = ["composition","colouring","proportions/perspective", "emotional impact"];
 
 twitterStream.on("error", error => {
     console.error(error);
