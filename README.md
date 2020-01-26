@@ -10,6 +10,7 @@
 ### But de l'application : 
 L'application critwit a pour but de permettre à des dessinateurs d'obtenir des critiques constructives sur leurs oeuvres 
 
+### Fonctionnement :
    Elle récupère en temps réel les tweets comportant le **#artcritweet** et les affiche aux utilisateurs de l'app.  
 Depuis l'application les utilisateurs, peuvent noter un dessin sur plusieurs critères. Ils peuvent aussi laisser un court commentaire afin de donner des indications plus précises.  
 Une fois envoyée la critique ou "review" sera transmise en reponse au tweet d'origine.
